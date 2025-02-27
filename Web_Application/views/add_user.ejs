@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        select {
+            -webkit-appearance: none; /* Remove default dropdown arrow in some browsers */
+            -moz-appearance: none;
+            appearance: none;
+            background-color: #fff;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="0,0 100,0 50,100" fill="%23222"></polygon></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Sign Up</h2>
+    <form id="signupForm">
+        <label for="userID">User ID:</label>
+        <input type="text" id="userID" name="userID" required>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="company">Company:</label>
+        <select id="company" name="company" required> 
+            <option value="" disabled selected>Select a Company</option>
+            <% companies.forEach(company => { %>
+                <option value="<%= company.companyName %>"><%= company.companyName %></option>
+            <% }) %>
+        </select>
+        
+        
+
+        <button type="submit">Sign Up</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('signupForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const user = {
+        userID: document.getElementById('userID').value,
+        Name: document.getElementById('name').value,
+        Password: document.getElementById('password').value,
+        Company: document.getElementById('company').value 
+    };
+
+    try {
+        const response = await fetch('/admin/postSignUp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        });
+
+        if (response.status === 201) {
+            alert('Sign-up successful!');
+            window.location.href = '/admin/getDashboard';
+            document.getElementById('signupForm').reset(); 
+        } else if (response.status === 400) {
+            alert('User ID already exists. Please choose another one.');
+            window.location.href = '/admin/addUser';
+        } else {
+            alert('Sign-up failed. Please try again.');
+            window.location.href = '/admin/addUser';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while signing up.');
+    }
+});
+
+</script>
+
+</body>
+</html>
